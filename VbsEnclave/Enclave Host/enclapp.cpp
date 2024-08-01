@@ -88,13 +88,20 @@ HRESULT Run()
     ULONG_PTR Input = 0x1234;
     void* Output;
 
-    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
+    //RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
 
-    // Verify that it performed the expected calculation.
-    if ((reinterpret_cast<ULONG_PTR>(Output) ^ Input) != 0xDADAF00D)
-    {
-        printf("Unexpected result from enclave\n");
-    }        
+    //// Verify that it performed the expected calculation.
+    //if ((reinterpret_cast<ULONG_PTR>(Output) ^ Input) != 0xDADAF00D)
+    //{
+    //    printf("Unexpected result from enclave\n");
+    //} 
+
+    //[2024.08.01 Test]
+    //Locate the function in the enclave.
+    PENCLAVE_ROUTINE Routine = reinpterpret_case<PENCLAVE>
+    RETURN_IF_WIN32_BOOL_FALSE(CryptoEnclaveTest(Routine, reinterpret_cast<void*>, TRUE, &Output));
+
+
 
     // Destructor of "cleanup" variable will terminate and delete the enclave.
 

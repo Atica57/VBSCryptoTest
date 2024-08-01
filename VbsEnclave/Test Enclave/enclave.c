@@ -64,3 +64,28 @@ CallEnclaveTest(
 
     return (void*)((ULONG_PTR)(Context) ^ InitialCookie);
 }
+
+void* 
+CALLBACK
+CryptoEnclaveTest(
+    /*_In_ void* Context*/
+)
+{   
+    BCRYPT_ALG_HANDLE algHandle = NULL;
+    BCRYPT_KEY_HANDLE keyHandle= NULL;
+    ULONG keySize = 512; //key size will be defined in constants file
+
+    if (!BCryptOpenAlgorithmProvider(algHandle, "BCRYPT_RSA_ALGORITHM", NULL, 0)) {
+        return (void*) NULL;
+    }
+    if (!BCryptGenerateKeyPair(algHandle, keyHandle, keySize, 0, 0)) {
+        return (void*) NULL;
+    }
+
+    printf("Generate Key Pair\n");
+
+    //end
+    if (!BCryptCloseAlgorithmProvider(algHandle, 0)) {
+        return (void*) NULL;
+    }
+}
