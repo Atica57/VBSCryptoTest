@@ -80,13 +80,13 @@ HRESULT Run()
         InitInfo.Length,
         nullptr));
 
-    // Locate the function in the enclave.
-    PENCLAVE_ROUTINE Routine = reinterpret_cast<PENCLAVE_ROUTINE>(GetProcAddress(reinterpret_cast<HMODULE>(Enclave), "CallEnclaveTest"));
-    RETURN_LAST_ERROR_IF_NULL(Routine);
+    //// Locate the function in the enclave.
+    //PENCLAVE_ROUTINE Routine = reinterpret_cast<PENCLAVE_ROUTINE>(GetProcAddress(reinterpret_cast<HMODULE>(Enclave), "CallEnclaveTest"));
+    //RETURN_LAST_ERROR_IF_NULL(Routine);
 
-    // Call the function. Our test function XOR's its input with a magic number.
-    ULONG_PTR Input = 0x1234;
-    void* Output;
+    //// Call the function. Our test function XOR's its input with a magic number.
+    //ULONG_PTR Input = 0x1234;
+    //void* Output;
 
     //RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
 
@@ -98,10 +98,23 @@ HRESULT Run()
 
     //[2024.08.01 Test]
     //Locate the function in the enclave.
-    PENCLAVE_ROUTINE Routine = reinpterpret_case<PENCLAVE>
-    RETURN_IF_WIN32_BOOL_FALSE(CryptoEnclaveTest(Routine, reinterpret_cast<void*>, TRUE, &Output));
+    PENCLAVE_ROUTINE CryptoRoutine = reinterpret_cast<PENCLAVE_ROUTINE>(GetProcAddress(reinterpret_cast<HMODULE>(Enclave), "CallCryptoEnclaveTest"));
+    RETURN_LAST_ERROR_IF_NULL(CryptoRoutine);
 
+    // Call the function for Cryptography
+    ULONG_PTR Input = 0x0;
+    void* CryptoOutput;
+    
+    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(CryptoRoutine, reinterpret_cast<void*>(Input), TRUE, &CryptoOutput));
+    
+    ////Verify that it performed the expected calculation.
+    //if (reinterpret_cast<ULONG_PTR>()) {
+    //    printf("Unexpected result from enclave\n");
+    //}
 
+    //[2024.08.02] output test
+
+    printf("%lld\n", (ULONG_PTR)CryptoOutput);
 
     // Destructor of "cleanup" variable will terminate and delete the enclave.
 
@@ -126,6 +139,10 @@ main(
     if (hr == HRESULT_FROM_WIN32(ERROR_INVALID_IMAGE_HASH))
     {
         wprintf(L"If you developer-signed the DLL, make sure that you have enabled test signing.\n");
+    }
+    //[2024.08.02] add code for printing success
+    else {
+        wprintf(L"success\n");
     }
 
     return SUCCEEDED(hr) ? EXIT_SUCCESS : EXIT_FAILURE;

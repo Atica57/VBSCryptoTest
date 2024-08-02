@@ -1,5 +1,5 @@
 LIBRARY
 
 EXPORTS
-        CallEnclaveTest
-        CryptoEnclaveTest
+;        CallEnclaveTest
+        CallCryptoEnclaveTest

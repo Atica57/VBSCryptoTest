@@ -51,7 +51,7 @@ DllMain(
 
     return TRUE;
 }
-
+/*
 void*
 CALLBACK
 CallEnclaveTest(
@@ -64,16 +64,18 @@ CallEnclaveTest(
 
     return (void*)((ULONG_PTR)(Context) ^ InitialCookie);
 }
+*/
 
 void* 
 CALLBACK
-CryptoEnclaveTest(
-    /*_In_ void* Context*/
+CallCryptoEnclaveTest(
+    _In_ void* Context
 )
 {   
     BCRYPT_ALG_HANDLE algHandle = NULL;
     BCRYPT_KEY_HANDLE keyHandle= NULL;
     ULONG keySize = 512; //key size will be defined in constants file
+    WCHAR String[32];
 
     if (!BCryptOpenAlgorithmProvider(algHandle, "BCRYPT_RSA_ALGORITHM", NULL, 0)) {
         return (void*) NULL;
@@ -82,10 +84,13 @@ CryptoEnclaveTest(
         return (void*) NULL;
     }
 
-    printf("Generate Key Pair\n");
+    swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"Generate Key Pair");
+    //printf("Generate Key Pair\n");
 
     //end
     if (!BCryptCloseAlgorithmProvider(algHandle, 0)) {
         return (void*) NULL;
     }
+
+    return (void*)((ULONG_PTR)100);
 }
