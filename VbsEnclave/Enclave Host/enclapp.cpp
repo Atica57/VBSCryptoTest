@@ -113,7 +113,7 @@ HRESULT Run()
     //}
 
     //[2024.08.02] output test
-
+    OutputDebugStringW(L"enclapp.cpp --> CallEnclave Success\n");
     printf("%lld\n", (ULONG_PTR)CryptoOutput);
 
     // Destructor of "cleanup" variable will terminate and delete the enclave.

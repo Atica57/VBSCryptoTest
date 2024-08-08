@@ -34,6 +34,7 @@ const IMAGE_ENCLAVE_CONFIG __enclave_config = {
 };
 
 ULONG InitialCookie;
+ULONG CheckCode;
 
 BOOL
 DllMain(
@@ -47,11 +48,12 @@ DllMain(
 
     if (dwReason == DLL_PROCESS_ATTACH) {
         InitialCookie = 0xDADAF00D;
+        CheckCode = 0x0;
     }
 
     return TRUE;
 }
-/*
+
 void*
 CALLBACK
 CallEnclaveTest(
@@ -64,7 +66,7 @@ CallEnclaveTest(
 
     return (void*)((ULONG_PTR)(Context) ^ InitialCookie);
 }
-*/
+
 
 void* 
 CALLBACK
@@ -84,7 +86,15 @@ CallCryptoEnclaveTest(
         return (void*) NULL;
     }
 
-    swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"Generate Key Pair");
+    int ret = swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"Generate Key Pair");
+    if (ret > 0) {
+        OutputDebugStringW(String);
+    }
+    else {
+        CheckCode = 0x03;
+        OutputDebugStringW(L"swprintf_s failed!!\n");
+    }
+
     //printf("Generate Key Pair\n");
 
     //end
@@ -92,5 +102,5 @@ CallCryptoEnclaveTest(
         return (void*) NULL;
     }
 
-    return (void*)((ULONG_PTR)100);
+    return (void*)CheckCode;
 }
