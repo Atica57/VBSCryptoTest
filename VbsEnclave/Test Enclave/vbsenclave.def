@@ -2,4 +2,4 @@ LIBRARY
 
 EXPORTS
 ;        CallEnclaveTest
-        CallCryptoEnclaveTest
+        CallCreateKeyEnclaveTest

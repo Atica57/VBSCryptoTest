@@ -98,14 +98,14 @@ HRESULT Run()
 
     //[2024.08.01 Test]
     //Locate the function in the enclave.
-    PENCLAVE_ROUTINE CryptoRoutine = reinterpret_cast<PENCLAVE_ROUTINE>(GetProcAddress(reinterpret_cast<HMODULE>(Enclave), "CallCryptoEnclaveTest"));
+    PENCLAVE_ROUTINE CryptoRoutine = reinterpret_cast<PENCLAVE_ROUTINE>(GetProcAddress(reinterpret_cast<HMODULE>(Enclave), "CallCreateKeyEnclaveTest"));
     RETURN_LAST_ERROR_IF_NULL(CryptoRoutine);
 
     // Call the function for Cryptography
-    ULONG_PTR Input = 0x0;
-    void* CryptoOutput;
+    ULONG_PTR Input = 0x1234; //temporary fixed input
+    void* EncryptedOutput;
     
-    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(CryptoRoutine, reinterpret_cast<void*>(Input), TRUE, &CryptoOutput));
+    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(CryptoRoutine, reinterpret_cast<void*>(Input), TRUE, &EncryptedOutput));
     
     ////Verify that it performed the expected calculation.
     //if (reinterpret_cast<ULONG_PTR>()) {
@@ -113,8 +113,8 @@ HRESULT Run()
     //}
 
     //[2024.08.02] output test
-    OutputDebugStringW(L"enclapp.cpp --> CallEnclave Success\n");
-    printf("%lld\n", (ULONG_PTR)CryptoOutput);
+    OutputDebugStringW(L"enclapp.cpp --> CallCreateKeyEnclave Success\n");
+    wprintf(L"Encrypted Output : %llx\n", (ULONG_PTR)EncryptedOutput);
 
     // Destructor of "cleanup" variable will terminate and delete the enclave.
 
