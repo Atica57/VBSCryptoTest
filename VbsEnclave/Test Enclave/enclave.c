@@ -122,3 +122,18 @@ CallCreateKeyEnclaveTest(
 
     return (void*)EncryptedOutput;
 }
+
+void*
+CALLBACK
+CreatePersistedKeyGuardKey(
+    void
+)
+{
+    SECURITY_STATUS status;
+    NCRYPT_PROV_HANDLE hProv = 0;
+    NCRYPT_KEY_HANDLE hKey = 0;
+    DWORD dwKeySize = 2048;
+
+    status = NCryptOpenStorageProvider(&hProv, MS_KEY_STORAGE_PROVIDER, 0);
+
+}
