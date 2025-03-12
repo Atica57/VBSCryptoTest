@@ -80,41 +80,27 @@ HRESULT Run()
         InitInfo.Length,
         nullptr));
 
-    //// Locate the function in the enclave.
-    //PENCLAVE_ROUTINE Routine = reinterpret_cast<PENCLAVE_ROUTINE>(GetProcAddress(reinterpret_cast<HMODULE>(Enclave), "CallEnclaveTest"));
-    //RETURN_LAST_ERROR_IF_NULL(Routine);
+    // Locate the function in the enclave.
+    PENCLAVE_ROUTINE Routine = reinterpret_cast<PENCLAVE_ROUTINE>(GetProcAddress(reinterpret_cast<HMODULE>(Enclave), "CallEnclaveTest"));
+    RETURN_LAST_ERROR_IF_NULL(Routine);
 
-    //// Call the function. Our test function XOR's its input with a magic number.
-    //ULONG_PTR Input = 0x1234;
-    //void* Output;
+    // Call the function. Our test function XOR's its input with a magic number.
+    ULONG_PTR Input = 0x1234;
+    void* Output;
 
-    //RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
+    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
 
-    //// Verify that it performed the expected calculation.
-    //if ((reinterpret_cast<ULONG_PTR>(Output) ^ Input) != 0xDADAF00D)
-    //{
-    //    printf("Unexpected result from enclave\n");
-    //} 
-
-    //[2024.08.01 Test]
-    //Locate the function in the enclave.
-    PENCLAVE_ROUTINE CryptoRoutine = reinterpret_cast<PENCLAVE_ROUTINE>(GetProcAddress(reinterpret_cast<HMODULE>(Enclave), "CallCreateKeyEnclaveTest"));
-    RETURN_LAST_ERROR_IF_NULL(CryptoRoutine);
-
-    // Call the function for Cryptography
-    ULONG_PTR Input = 0x1234; //temporary fixed input
-    void* EncryptedOutput;
-    
-    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(CryptoRoutine, reinterpret_cast<void*>(Input), TRUE, &EncryptedOutput));
-    
-    ////Verify that it performed the expected calculation.
-    //if (reinterpret_cast<ULONG_PTR>()) {
-    //    printf("Unexpected result from enclave\n");
-    //}
-
-    //[2024.08.02] output test
-    OutputDebugStringW(L"enclapp.cpp --> CallCreateKeyEnclave Success\n");
-    wprintf(L"Encrypted Output : %llx\n", (ULONG_PTR)EncryptedOutput);
+    // Verify that it performed the expected calculation.
+    if ((reinterpret_cast<ULONG_PTR>(Output) ^ Input) != 0xDADAF00D)
+    {
+        printf("Unexpected result from enclave\n");
+    }
+    else {//print Output and Input
+        printf("Output: %llX\n", reinterpret_cast<ULONG_PTR>(Output));
+        printf("Input: %llX\n", Input);
+        printf("Output ^ Input: %llX\n", reinterpret_cast<ULONG_PTR>(Output) ^ Input);
+        printf("Finished!\n");
+    }
 
     // Destructor of "cleanup" variable will terminate and delete the enclave.
 
@@ -140,9 +126,8 @@ main(
     {
         wprintf(L"If you developer-signed the DLL, make sure that you have enabled test signing.\n");
     }
-    //[2024.08.02] add code for printing success
     else {
-        wprintf(L"success\n");
+        wprintf(L"Success!\n");
     }
 
     return SUCCEEDED(hr) ? EXIT_SUCCESS : EXIT_FAILURE;

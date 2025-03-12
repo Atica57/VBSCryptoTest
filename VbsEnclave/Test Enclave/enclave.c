@@ -34,8 +34,6 @@ const IMAGE_ENCLAVE_CONFIG __enclave_config = {
 };
 
 ULONG InitialCookie;
-ULONG CheckCode;
-ULONG IV; //initial vectore
 
 BOOL
 DllMain(
@@ -49,8 +47,6 @@ DllMain(
 
     if (dwReason == DLL_PROCESS_ATTACH) {
         InitialCookie = 0xDADAF00D;
-        CheckCode = 0x0;
-        IV = 0x1112; //temporary set IV value
     }
 
     return TRUE;
@@ -67,73 +63,4 @@ CallEnclaveTest(
     OutputDebugStringW(String);
 
     return (void*)((ULONG_PTR)(Context) ^ InitialCookie);
-}
-
-
-void* 
-CALLBACK
-CallCreateKeyEnclaveTest(
-    _In_ void* PlainInput
-)
-{   
-    BCRYPT_ALG_HANDLE algHandle = NULL;
-    BCRYPT_KEY_HANDLE keyHandle= NULL;
-    ULONG keySize = 512; //key size will be defined in constants file
-    WCHAR String[32];
-
-    //create pubilc/private key pair
-    if (!BCryptOpenAlgorithmProvider(algHandle, "BCRYPT_RSA_ALGORITHM", NULL, 0)) {
-        return (void*) NULL;
-    }
-    if (!BCryptGenerateKeyPair(algHandle, keyHandle, keySize, 0, 0)) {
-        return (void*) NULL;
-    }
-    if (!BCryptFinalizeKeyPair(keyHandle, 0)) {
-        return (void*) NULL;
-    }
-
-
-    //store created key..
-    //EnclaveCealData(, keySize, );
-
-    //[test] Encrypt input data(pubilc/private key encryption)
-    PUCHAR EncryptedOutput = NULL;
-    if (!BCryptEncrypt(keyHandle, (ULONG_PTR)PlainInput, sizeof(PlainInput), NULL, IV, sizeof(IV), 
-                        EncryptedOutput, sizeof(EncryptedOutput), NULL, BCRYPT_PAD_NONE)) {
-        return (void*) NULL;
-    }
-
-
-    int ret = swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"Generate Key Pair");
-    if (ret > 0) {
-        OutputDebugStringW(String);
-    }
-    else {
-        CheckCode = 0x03;
-        OutputDebugStringW(L"swprintf_s failed!!\n");
-        return (void*)CheckCode;
-    }
-
-
-    //end
-    if (!BCryptCloseAlgorithmProvider(algHandle, 0)) {
-        return (void*) NULL;
-    }
-
-    return (void*)EncryptedOutput;
-}
-
-void*
-CALLBACK
-CreatePersistedKeyGuardKey(
-    void
-)
-{
-    SECURITY_STATUS status;
-    NCRYPT_PROV_HANDLE hProv = 0;
-    NCRYPT_KEY_HANDLE hKey = 0;
-    DWORD dwKeySize = 2048;
-
-    status = NCryptOpenStorageProvider(&hProv, MS_KEY_STORAGE_PROVIDER, 0);
-
 }
