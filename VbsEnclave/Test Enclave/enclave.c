@@ -34,6 +34,7 @@ const IMAGE_ENCLAVE_CONFIG __enclave_config = {
 };
 
 ULONG InitialCookie;
+char str[1024] = "[Enclave]This is example for Enclave memory dump.";
 
 BOOL
 DllMain(
@@ -55,6 +56,19 @@ DllMain(
 void*
 CALLBACK
 CallEnclaveTest(
+    _In_ void* Context
+)
+{
+    WCHAR String[32];
+    swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"CallEnclaveTest started");
+    OutputDebugStringW(String);
+
+    return (void*)((ULONG_PTR)(Context) ^ InitialCookie);
+}
+
+void*
+CALLBACK
+SaveEnclaveDataTest(
     _In_ void* Context
 )
 {
