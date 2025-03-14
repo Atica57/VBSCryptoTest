@@ -3,4 +3,5 @@ LIBRARY
 EXPORTS
         CallEnclaveTest
         SaveEnclaveDataTest
+        LoadEnclaveDataTest
 ;        CallCreateKeyEnclaveTest

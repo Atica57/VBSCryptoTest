@@ -29,7 +29,8 @@ HRESULT Run()
     // Create the enclave
     constexpr ENCLAVE_CREATE_INFO_VBS CreateInfo
     {
-        ENCLAVE_VBS_FLAG_DEBUG, // Flags
+        ENCLAVE_VBS_FLAG_DEBUG, // Flags --> The enclave permits debugging
+		//0, // The encalve does not permit debugging
         { 0x10, 0x20, 0x30, 0x40, 0x41, 0x31, 0x21, 0x11 }, // OwnerID
     };
 

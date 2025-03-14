@@ -21,6 +21,7 @@ const IMAGE_ENCLAVE_CONFIG __enclave_config = {
     sizeof(IMAGE_ENCLAVE_CONFIG),
     IMAGE_ENCLAVE_MINIMUM_CONFIG_SIZE,
     IMAGE_ENCLAVE_POLICY_DEBUGGABLE,    // DO NOT SHIP DEBUGGABLE ENCLAVES TO PRODUCTION
+	//0,          //The enclave does not permit debugging
     0,
     0,
     0,
@@ -69,12 +70,39 @@ CallEnclaveTest(
 void*
 CALLBACK
 SaveEnclaveDataTest(
-    _In_ void* Context
+
 )
 {
     WCHAR String[32];
-    swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"CallEnclaveTest started");
+    swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"SaveEnclaveDataTest started");
     OutputDebugStringW(String);
 
-    return (void*)((ULONG_PTR)(Context) ^ InitialCookie);
+    PVOID ProtectedBolb;
+
+    HRESULT hr = EnclaveSealData(
+                    (void*)str, 
+                    sizeof(str), 
+                    ENCLAVE_IDENTITY_POLICY_SEAL_SAME_FAMILY, 
+                    ENCLAVE_RUNTIME_POLICY_ALLOW_FULL_DEBUG, 
+                    ProtectedBolb, 
+                    sizeof(str),
+                    NULL
+    );
+    return hr;
+}
+
+void* 
+CALLBACK
+LoadEnclaveDataTest(
+
+)
+{
+    WCHAR String[32];
+    swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"SaveEnclaveDataTest started");
+    OutputDebugStringW(String);
+
+    HRESULT hr = EnclaveUnsealData(
+                    
+                    
+    )
 }
