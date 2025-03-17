@@ -77,18 +77,25 @@ SaveEnclaveDataTest(
     swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"SaveEnclaveDataTest started");
     OutputDebugStringW(String);
 
-    PVOID ProtectedBolb;
+    SealDataInfo* SealData ;
 
     HRESULT hr = EnclaveSealData(
                     (void*)str, 
                     sizeof(str), 
                     ENCLAVE_IDENTITY_POLICY_SEAL_SAME_FAMILY, 
                     ENCLAVE_RUNTIME_POLICY_ALLOW_FULL_DEBUG, 
-                    ProtectedBolb, 
+                    SealData->ProtectedBolb,
                     sizeof(str),
-                    NULL
+                    SealData->ProtectedBolbSize
     );
-    return hr;
+    if(hr != S_OK)
+	{
+		return hr;
+	}
+	else
+	{
+		return SealData;
+	}
 }
 
 void* 
@@ -101,8 +108,8 @@ LoadEnclaveDataTest(
     swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"SaveEnclaveDataTest started");
     OutputDebugStringW(String);
 
-    HRESULT hr = EnclaveUnsealData(
+    //HRESULT hr = EnclaveUnsealData(
                     
                     
-    )
+    //)
 }

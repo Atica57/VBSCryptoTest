@@ -15,3 +15,9 @@
 #include <wchar.h>
 //[24.07.30]
 #include <bcrypt.h>
+
+//[25.03.17]
+typedef struct SealDataInfo {
+    PVOID ProtectedBolb;
+    UINT32* ProtectedBolbSize;
+}SealDataInfo;

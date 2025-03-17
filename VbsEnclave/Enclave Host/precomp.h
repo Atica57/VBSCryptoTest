@@ -15,3 +15,9 @@
 #include <stdio.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <fstream>
+
+typedef struct SealDataInfo {
+    PVOID ProtectedBolb;
+    UINT32* ProtectedBolbSize;
+}SealDataInfo;
