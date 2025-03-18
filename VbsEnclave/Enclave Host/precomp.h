@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <stdlib.h>
 #include <fstream>
 
 typedef struct SealDataInfo {

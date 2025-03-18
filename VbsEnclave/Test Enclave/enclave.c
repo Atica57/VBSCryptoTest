@@ -70,23 +70,21 @@ CallEnclaveTest(
 void*
 CALLBACK
 SaveEnclaveDataTest(
-
+    _In_ void* SealData
 )
 {
     WCHAR String[32];
     swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"SaveEnclaveDataTest started");
     OutputDebugStringW(String);
 
-    SealDataInfo* SealData ;
-
     HRESULT hr = EnclaveSealData(
                     (void*)str, 
                     sizeof(str), 
                     ENCLAVE_IDENTITY_POLICY_SEAL_SAME_FAMILY, 
                     ENCLAVE_RUNTIME_POLICY_ALLOW_FULL_DEBUG, 
-                    SealData->ProtectedBolb,
+                    ((SealDataInfo*)SealData)->ProtectedBolb,
                     sizeof(str),
-                    SealData->ProtectedBolbSize
+                    ((SealDataInfo*)SealData)->ProtectedBolbSize
     );
     if(hr != S_OK)
 	{
@@ -94,22 +92,46 @@ SaveEnclaveDataTest(
 	}
 	else
 	{
-		return SealData;
+		return NULL;
 	}
 }
 
 void* 
 CALLBACK
 LoadEnclaveDataTest(
-
+    _In_ void* SealData
 )
 {
-    WCHAR String[32];
-    swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"SaveEnclaveDataTest started");
-    OutputDebugStringW(String);
+	WCHAR String[32];
+	swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"LoadEnclaveDataTest started");
+	OutputDebugStringW(String);
 
-    //HRESULT hr = EnclaveUnsealData(
-                    
-                    
-    //)
+    PVOID DecryptedData = malloc(sizeof(char*) * 32'768);
+	UINT32 *DecryptedDataSize = NULL;
+    ENCLAVE_IDENTITY *SealingIdentity = NULL;
+    UINT32* UnsealingFlasgs = NULL;
+
+	HRESULT hr = EnclaveUnsealData(
+		            (VOID *)((SealDataInfo*)SealData)->ProtectedBolb,
+		            (UINT32)((SealDataInfo*)SealData)->ProtectedBolbSize,
+                    DecryptedData,
+                    sizeof(str),
+		            DecryptedDataSize,
+		            SealingIdentity,
+		            UnsealingFlasgs
+	);
+	if (hr != S_OK)
+	{
+        free(DecryptedData);
+		return hr;
+	}
+	//기존 str과 일치하는 지 확인
+    if (!strcmp((char*)(DecryptedData), str)) {
+        free(DecryptedData);
+        return E_FAIL;
+    }
+    else {
+        free(DecryptedData);
+		return S_OK;
+    }
 }
