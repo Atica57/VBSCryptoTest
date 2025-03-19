@@ -1,4 +1,4 @@
-//*********************************************************
+ï»¿//*********************************************************
 //
 // Copyright (c) Microsoft. All rights reserved.
 // This code is licensed under the MIT License (MIT).
@@ -113,7 +113,7 @@ LoadEnclaveDataTest(
 
 	HRESULT hr = EnclaveUnsealData(
 		            (VOID *)((SealDataInfo*)SealData)->ProtectedBolb,
-		            (UINT32)((SealDataInfo*)SealData)->ProtectedBolbSize,
+		            (UINT32)*(((SealDataInfo*)SealData)->ProtectedBolbSize),
                     DecryptedData,
                     sizeof(str),
 		            DecryptedDataSize,
@@ -125,7 +125,7 @@ LoadEnclaveDataTest(
         free(DecryptedData);
 		return hr;
 	}
-	//±âÁ¸ str°ú ÀÏÄ¡ÇÏ´Â Áö È®ÀÎ
+	//ê¸°ì¡´ strê³¼ ì¼ì¹˜í•˜ëŠ” ì§€ í™•ì¸
     if (!strcmp((char*)(DecryptedData), str)) {
         free(DecryptedData);
         return E_FAIL;
