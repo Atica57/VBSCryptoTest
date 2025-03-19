@@ -105,33 +105,41 @@ LoadEnclaveDataTest(
 	WCHAR String[32];
 	swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"LoadEnclaveDataTest started");
 	OutputDebugStringW(String);
-
-    PVOID DecryptedData = malloc(sizeof(char*) * 32'768);
-	UINT32 *DecryptedDataSize = NULL;
+    
+    UnsealDataInfo* UnsealData = malloc(sizeof(UnsealDataInfo));
+	UnsealData->DecryptedData = malloc(sizeof(char*) * 32'768);
+    UnsealData->DecryptedDataSize = NULL;
+    //PVOID DecryptedData = malloc(sizeof(char*) * 32'768);
+	//UINT32 *DecryptedDataSize = NULL;
     ENCLAVE_IDENTITY *SealingIdentity = NULL;
     UINT32* UnsealingFlasgs = NULL;
 
 	HRESULT hr = EnclaveUnsealData(
-		            (VOID *)((SealDataInfo*)SealData)->ProtectedBolb,
-		            (UINT32)*(((SealDataInfo*)SealData)->ProtectedBolbSize),
-                    DecryptedData,
+		            ((SealDataInfo*)SealData)->ProtectedBolb,
+		            *(((SealDataInfo*)SealData)->ProtectedBolbSize),
+                    UnsealData->DecryptedData,
                     sizeof(str),
-		            DecryptedDataSize,
+		            UnsealData->DecryptedDataSize,
 		            SealingIdentity,
 		            UnsealingFlasgs
 	);
-	if (hr != S_OK)
-	{
-        free(DecryptedData);
-		return hr;
-	}
-	//기존 str과 일치하는 지 확인
-    if (!strcmp((char*)(DecryptedData), str)) {
-        free(DecryptedData);
-        return E_FAIL;
-    }
-    else {
-        free(DecryptedData);
-		return S_OK;
-    }
+	return (void*)UnsealData;
+	//if (hr != S_OK)
+	//{
+ //       //free(DecryptedData);
+	//	return hr;
+	//}
+	//else
+	//{
+	//	return (void *)UnsealData;
+	//}
+	////기존 str과 일치하는 지 확인
+ //   if (!strcmp((char*)(DecryptedData), str)) {
+ //       free(DecryptedData);
+ //       return E_FAIL;
+ //   }
+ //   else {
+ //       free(DecryptedData);
+	//	return S_OK;
+ //   }
 }

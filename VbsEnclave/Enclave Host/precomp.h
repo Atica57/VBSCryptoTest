@@ -22,3 +22,8 @@ typedef struct SealDataInfo {
     PVOID ProtectedBolb;
     UINT32* ProtectedBolbSize;
 }SealDataInfo;
+
+typedef struct UnsealDataInfo {
+	PVOID DecryptedData;
+	UINT32* DecryptedDataSize;
+}UnsealDataInfo;

@@ -190,10 +190,18 @@ HRESULT RunSealAndUnsealData()
 
     RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine2, reinterpret_cast<void*>(SealData), TRUE /* fWaitForThread */, &Output2));
 
-    if (reinterpret_cast<HRESULT>(Output2) == E_FAIL) {
+    /*if (reinterpret_cast<HRESULT>(Output2) == E_FAIL) {
 		printf("결과: Not Equal. Do try again\n");
+	}*/
+    if (Output2 == nullptr) {
+		printf("Output2 is null\n");    
+    }
+	else if (reinterpret_cast<UnsealDataInfo*>(Output2)->DecryptedDataSize != NULL) {
+		printf("Decrypted Data: %s\n", reinterpret_cast<char*>(reinterpret_cast<UnsealDataInfo*>(Output2)->DecryptedData));
+		printf("Decrypted Data Size: %d\n", *(reinterpret_cast<UnsealDataInfo*>(Output2)->DecryptedDataSize));
 	}
-    else if (reinterpret_cast<HRESULT>(Output2) != S_OK) {
+
+    /*if (reinterpret_cast<HRESULT>(Output2) != S_OK) {
         printf("결과: 에러발생\n");
 
         if (FAILED(reinterpret_cast<HRESULT>(Output2)))
@@ -206,7 +214,7 @@ HRESULT RunSealAndUnsealData()
     }
 	else {
 		printf("Match!!!!\n");
-    }
+    }*/
 
     // Destructor of "cleanup" variable will terminate and delete the enclave.
 
