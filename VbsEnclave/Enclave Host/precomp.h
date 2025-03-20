@@ -17,13 +17,16 @@
 #include <wil/result_macros.h>
 #include <stdlib.h>
 #include <fstream>
+#define BUFFER_SIZE 4'096
 
 typedef struct SealDataInfo {
-    PVOID ProtectedBolb;
-    UINT32* ProtectedBolbSize;
+	PVOID ProtectedBolb;
+	UINT32* ProtectedBolbSize;
+	HRESULT hr;
 }SealDataInfo;
 
 typedef struct UnsealDataInfo {
 	PVOID DecryptedData;
 	UINT32* DecryptedDataSize;
+	HRESULT hr;
 }UnsealDataInfo;

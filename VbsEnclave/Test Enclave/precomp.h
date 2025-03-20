@@ -17,14 +17,16 @@
 #include <bcrypt.h>
 #include <string.h>
 #include <stdlib.h>
+#define BUFFER_SIZE 4'096
 
-//[25.03.17]
 typedef struct SealDataInfo {
     PVOID ProtectedBolb;
     UINT32* ProtectedBolbSize;
+	HRESULT hr;
 }SealDataInfo;
 
 typedef struct UnsealDataInfo {
 	PVOID DecryptedData;
 	UINT32* DecryptedDataSize;
+	HRESULT hr;
 }UnsealDataInfo;

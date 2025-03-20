@@ -91,8 +91,9 @@ HRESULT RunSealAndUnsealData()
     void* Output;
     //std::ofstream outFile("encalveData.dat", std::ios::binary);
     SealDataInfo* SealData = new SealDataInfo();
-    SealData->ProtectedBolb = malloc(sizeof(char*) * 32'768);
+    SealData->ProtectedBolb = malloc(sizeof(char*) * BUFFER_SIZE);
 	SealData->ProtectedBolbSize = new UINT32;
+	SealData->hr = E_FAIL;
 
     //RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
     RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(SealData), TRUE /* fWaitForThread */, &Output));
