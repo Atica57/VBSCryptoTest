@@ -17,9 +17,9 @@
 #include <bcrypt.h>
 #include <string.h>
 #include <stdlib.h>
-#define BUFFER_SIZE 1024
 
-//[25.03.17]
+#define BUFFER_SIZE 4'096
+
 typedef struct SealDataInfo {
 	HRESULT hr;
     unsigned char* ProtectedBolb;

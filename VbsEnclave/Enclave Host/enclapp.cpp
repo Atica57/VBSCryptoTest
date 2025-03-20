@@ -97,11 +97,12 @@ HRESULT RunSealAndUnsealData()
     RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
     //RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(SealData), TRUE /* fWaitForThread */, &Output));
     SealDataInfo* SealData = reinterpret_cast<SealDataInfo*>(Output);
+    printf("GetLastError() = % d\n", GetLastError());
     if (Output == nullptr) {
         printf("Output is null\n");
     }
-    else if (reinterpret_cast<HRESULT>(Output) == E_FAIL) {
-        printf("Function return error.");
+    if (FAILED(SealData->hr)) {
+        printf("EnclaveSealData() 실패: HRESULT = 0x%X, GetLastError() = %d\n", SealData->hr, GetLastError());
     }
     else {
         printf("ProtectedBolb Adress: %p\n", SealData->ProtectedBolb);

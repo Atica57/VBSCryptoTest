@@ -87,13 +87,13 @@ SaveEnclaveDataTest(
                     (void*)str, 
                     strlen(str), 
                     ENCLAVE_IDENTITY_POLICY_SEAL_SAME_AUTHOR, 
-                    ENCLAVE_RUNTIME_POLICY_ALLOW_FULL_DEBUG, 
+                    ENCLAVE_RUNTIME_POLICY_ALLOW_FULL_DEBUG,
                     (PVOID)SealData->ProtectedBolb,
                     BufferSize,
                     SealData->ProtectedBolbSize
     );
     SealData->hr = hr;
-    return (void*)&SealData;
+    return (void*)SealData;
 }
 
 void* 

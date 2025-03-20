@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <fstream>
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4'096
 
 typedef struct SealDataInfo {
 	HRESULT hr;
