@@ -18,12 +18,18 @@
 #include <stdlib.h>
 #include <fstream>
 
+#define BUFFER_SIZE 1024
+
 typedef struct SealDataInfo {
-    PVOID ProtectedBolb;
-    UINT32* ProtectedBolbSize;
+	HRESULT hr;
+	unsigned char* ProtectedBolb;
+	//PVOID ProtectedBolb;
+	UINT32* ProtectedBolbSize;
 }SealDataInfo;
 
 typedef struct UnsealDataInfo {
-	PVOID DecryptedData;
+	HRESULT hr;
+	unsigned char* DecryptedData;
+	//PVOID DecryptedData;
 	UINT32* DecryptedDataSize;
 }UnsealDataInfo;

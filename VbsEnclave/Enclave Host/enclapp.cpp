@@ -30,7 +30,7 @@ HRESULT RunSealAndUnsealData()
     constexpr ENCLAVE_CREATE_INFO_VBS CreateInfo
     {
         ENCLAVE_VBS_FLAG_DEBUG, // Flags --> The enclave permits debugging
-		//0, // The encalve does not permit debugging
+        //0, // The encalve does not permit debugging
         { 0x10, 0x20, 0x30, 0x40, 0x41, 0x31, 0x21, 0x11 }, // OwnerID
     };
 
@@ -87,41 +87,26 @@ HRESULT RunSealAndUnsealData()
     RETURN_LAST_ERROR_IF_NULL(Routine);
 
     // Call the function. Our test function XOR's its input with a magic number.
-    //ULONG_PTR Input = 0x1234;
+    ULONG_PTR Input = 0x1234;
     void* Output;
     //std::ofstream outFile("encalveData.dat", std::ios::binary);
-    SealDataInfo* SealData = new SealDataInfo();
-    SealData->ProtectedBolb = malloc(sizeof(char*) * 32'768);
-	SealData->ProtectedBolbSize = new UINT32;
+    //SealDataInfo* SealData = new SealDataInfo();
+    //SealData->ProtectedBolb = malloc(sizeof(char*));
+    //SealData->ProtectedBolbSize = new UINT32;
 
-    //RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
-    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(SealData), TRUE /* fWaitForThread */, &Output));
-
-    // Verify that it performed the expected calculation.
-    //if ((reinterpret_cast<ULONG_PTR>(Output) ^ Input) != 0xDADAF00D)
-    //{
-    //    printf("Unexpected result from enclave\n");
-    //}
-    //else {//print Output and Input
-    //    printf("Output: %llX\n", reinterpret_cast<ULONG_PTR>(Output));
-    //    printf("Input: %llX\n", Input);
-    //    printf("Output ^ Input: %llX\n", reinterpret_cast<ULONG_PTR>(Output) ^ Input);
-    //    printf("Finished!\n");
-    //}
-
-
-    if (SealData->ProtectedBolb == nullptr) {
-        printf("Protected Blob is null\n");
-        if (SealData->ProtectedBolbSize == nullptr) {
-			printf("Protected Blob Size is null\n");
-		}
-        else {
-            printf("Protected Blob Size: %d\n", *(SealData->ProtectedBolbSize));
-        }
+    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
+    //RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(SealData), TRUE /* fWaitForThread */, &Output));
+    SealDataInfo* SealData = reinterpret_cast<SealDataInfo*>(Output);
+    if (Output == nullptr) {
+        printf("Output is null\n");
+    }
+    else if (reinterpret_cast<HRESULT>(Output) == E_FAIL) {
+        printf("Function return error.");
     }
     else {
         printf("ProtectedBolb Adress: %p\n", SealData->ProtectedBolb);
-        printf("Protected Blob Size: %d\n", *(SealData->ProtectedBolbSize));
+        //printf("ProtectedBolb value: %s\n", *(SealData->ProtectedBolb));
+        printf("Protected Blob Size: %d\n", SealData->ProtectedBolbSize);
     }
 
     //////////Create Another Enclave
@@ -191,16 +176,28 @@ HRESULT RunSealAndUnsealData()
     RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine2, reinterpret_cast<void*>(SealData), TRUE /* fWaitForThread */, &Output2));
 
     /*if (reinterpret_cast<HRESULT>(Output2) == E_FAIL) {
-		printf("결과: Not Equal. Do try again\n");
-	}*/
-    if (Output2 == nullptr) {
-		printf("Output2 is null\n");    
+        printf("결과: Not Equal. Do try again\n");
     }
-	else if (reinterpret_cast<UnsealDataInfo*>(Output2)->DecryptedDataSize != NULL) {
-		printf("Decrypted Data: %s\n", reinterpret_cast<char*>(reinterpret_cast<UnsealDataInfo*>(Output2)->DecryptedData));
-		printf("Decrypted Data Size: %d\n", *(reinterpret_cast<UnsealDataInfo*>(Output2)->DecryptedDataSize));
-	}
+    if (Output2 == nullptr) {
+        printf("Output2 is null\n");
+    }
+    else {
+		UnsealDataInfo* UnsealData = reinterpret_cast<UnsealDataInfo*>(Output2);
+        if (UnsealData->DecryptedData == nullptr) {
+            printf("Decrypted Data is null\n");
+        }
+        else {
+            printf("Decrypted Data: %s\n", reinterpret_cast<char*>(UnsealData->DecryptedData));
+        }
 
+        if (UnsealData->DecryptedDataSize == nullptr) {
+            printf("Decrypted Data Size is null\n");
+        }
+        else {
+            printf("Decrypted Data Size: %d\n", *(UnsealData->DecryptedDataSize));
+        }
+    }
+    */
     /*if (reinterpret_cast<HRESULT>(Output2) != S_OK) {
         printf("결과: 에러발생\n");
 
@@ -218,9 +215,10 @@ HRESULT RunSealAndUnsealData()
 
     // Destructor of "cleanup" variable will terminate and delete the enclave.
 
-    
-    delete SealData;
-
+    if (SealData != nullptr) {
+        free(SealData->ProtectedBolb);
+        free(SealData);
+    }
     return S_OK;
 }
 

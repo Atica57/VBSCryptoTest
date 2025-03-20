@@ -35,7 +35,7 @@ const IMAGE_ENCLAVE_CONFIG __enclave_config = {
 };
 
 ULONG InitialCookie;
-char str[1024] = "[Enclave]This is example for Enclave memory dump.";
+unsigned char str[BUFFER_SIZE] = "[Enclave]This is example for Enclave memory dump.";
 
 BOOL
 DllMain(
@@ -70,30 +70,30 @@ CallEnclaveTest(
 void*
 CALLBACK
 SaveEnclaveDataTest(
-    _In_ void* SealData
+    _In_ void* Input
 )
 {
     WCHAR String[32];
     swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"SaveEnclaveDataTest started");
     OutputDebugStringW(String);
 
+    UINT32 BufferSize = BUFFER_SIZE;
+	SealDataInfo* SealData = (SealDataInfo*)malloc(sizeof(SealDataInfo));
+    SealData->ProtectedBolb = (unsigned char*)malloc(sizeof(unsigned char)* BUFFER_SIZE);
+    SealData->ProtectedBolbSize = (UINT32*)malloc(sizeof(UINT32));
+    SealData->hr = E_FAIL;
+
     HRESULT hr = EnclaveSealData(
                     (void*)str, 
-                    sizeof(str), 
-                    ENCLAVE_IDENTITY_POLICY_SEAL_SAME_FAMILY, 
+                    strlen(str), 
+                    ENCLAVE_IDENTITY_POLICY_SEAL_SAME_AUTHOR, 
                     ENCLAVE_RUNTIME_POLICY_ALLOW_FULL_DEBUG, 
-                    ((SealDataInfo*)SealData)->ProtectedBolb,
-                    sizeof(str),
-                    ((SealDataInfo*)SealData)->ProtectedBolbSize
+                    (PVOID)SealData->ProtectedBolb,
+                    BufferSize,
+                    SealData->ProtectedBolbSize
     );
-    if(hr != S_OK)
-	{
-		return hr;
-	}
-	else
-	{
-		return NULL;
-	}
+    SealData->hr = hr;
+    return (void*)&SealData;
 }
 
 void* 
@@ -105,12 +105,14 @@ LoadEnclaveDataTest(
 	WCHAR String[32];
 	swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"LoadEnclaveDataTest started");
 	OutputDebugStringW(String);
-    
+    /*
     UnsealDataInfo* UnsealData = malloc(sizeof(UnsealDataInfo));
-	UnsealData->DecryptedData = malloc(sizeof(char*) * 32'768);
+    UnsealData->DecryptedData = NULL; //malloc(sizeof(char*) * 32'768);
     UnsealData->DecryptedDataSize = NULL;
+    UnsealData->hr = E_FAIL;
     //PVOID DecryptedData = malloc(sizeof(char*) * 32'768);
 	//UINT32 *DecryptedDataSize = NULL;
+    PVOID decryptedData = NULL;
     ENCLAVE_IDENTITY *SealingIdentity = NULL;
     UINT32* UnsealingFlasgs = NULL;
 
@@ -123,23 +125,7 @@ LoadEnclaveDataTest(
 		            SealingIdentity,
 		            UnsealingFlasgs
 	);
+    UnsealData->hr = hr;
 	return (void*)UnsealData;
-	//if (hr != S_OK)
-	//{
- //       //free(DecryptedData);
-	//	return hr;
-	//}
-	//else
-	//{
-	//	return (void *)UnsealData;
-	//}
-	////기존 str과 일치하는 지 확인
- //   if (!strcmp((char*)(DecryptedData), str)) {
- //       free(DecryptedData);
- //       return E_FAIL;
- //   }
- //   else {
- //       free(DecryptedData);
-	//	return S_OK;
- //   }
+    */
 }
