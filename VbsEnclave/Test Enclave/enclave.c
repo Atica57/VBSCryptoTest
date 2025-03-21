@@ -79,7 +79,8 @@ SaveEnclaveDataTest(
 
     UINT32 BufferSize = 0;// BUFFER_SIZE;
 	SealDataInfo* SealData = (SealDataInfo*)malloc(sizeof(SealDataInfo));
-    SealData->ProtectedBolb = NULL; //(unsigned char*)malloc(sizeof(unsigned char) * BUFFER_SIZE);
+    SealData->PB = NULL;
+    //SealData->ProtectedBolb = (unsigned char*)malloc(sizeof(unsigned char) * BUFFER_SIZE);
     SealData->ProtectedBolbSize = (UINT32*)malloc(sizeof(UINT32));
     SealData->hr = E_FAIL;
 
@@ -89,7 +90,7 @@ SaveEnclaveDataTest(
                     strlen(str), 
                     ENCLAVE_IDENTITY_POLICY_SEAL_SAME_AUTHOR, 
                     ENCLAVE_RUNTIME_POLICY_ALLOW_FULL_DEBUG,
-                    SealData->ProtectedBolb,
+                    SealData->PB,
                     BufferSize,
                     SealData->ProtectedBolbSize
     );

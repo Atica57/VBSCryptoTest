@@ -23,14 +23,15 @@
 
 typedef struct SealDataInfo {
 	HRESULT hr;
-	unsigned char* ProtectedBolb;
-	//PVOID ProtectedBolb;
+	BYTE* PB;
+	PVOID ProtectedBolb;
 	UINT32* ProtectedBolbSize;
+	UINT32 PBSize;
 }SealDataInfo;
 
 typedef struct UnsealDataInfo {
 	HRESULT hr;
-	unsigned char* DecryptedData;
+	BYTE* DecryptedData;
 	//PVOID DecryptedData;
 	UINT32* DecryptedDataSize;
 }UnsealDataInfo;
