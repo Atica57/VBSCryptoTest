@@ -19,8 +19,11 @@
 #include <fstream>
 #define BUFFER_SIZE 4'096
 
+//enclave.c 쪽 헤더파일
+
 typedef struct SealDataInfo {
 	PVOID ProtectedBolb;
+	BYTE PB[BUFFER_SIZE];
 	UINT32* ProtectedBolbSize;
 	HRESULT hr;
 }SealDataInfo;

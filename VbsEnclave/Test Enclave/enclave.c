@@ -76,14 +76,14 @@ SaveEnclaveDataTest(
     WCHAR String[32];
     swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"SaveEnclaveDataTest started");
     OutputDebugStringW(String);
-	UINT32 BufferSize = BUFFER_SIZE;
+    UINT32 BufferSize = BUFFER_SIZE;
     HRESULT hr = EnclaveSealData(
                     (void*)str, 
                     strlen(str), 
                     ENCLAVE_IDENTITY_POLICY_SEAL_SAME_FAMILY, 
                     ENCLAVE_RUNTIME_POLICY_ALLOW_FULL_DEBUG, 
-                    ((SealDataInfo*)SealData)->ProtectedBolb,
-                    BUFFER_SIZE,
+                    (PVOID)((SealDataInfo*)SealData)->PB,
+                    BufferSize,
                     ((SealDataInfo*)SealData)->ProtectedBolbSize
     );
     ((SealDataInfo*)SealData)->hr = hr;

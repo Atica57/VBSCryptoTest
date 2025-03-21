@@ -91,25 +91,13 @@ HRESULT RunSealAndUnsealData()
     void* Output;
     //std::ofstream outFile("encalveData.dat", std::ios::binary);
     SealDataInfo* SealData = new SealDataInfo();
-    SealData->ProtectedBolb = malloc(sizeof(char*) * BUFFER_SIZE);
-	SealData->ProtectedBolbSize = new UINT32;
+    //SealData->ProtectedBolb = malloc(sizeof(BYTE) * BUFFER_SIZE);
+    //SealData->PB = (BYTE*)malloc(sizeof(BYTE) * BUFFER_SIZE);
+    SealData->ProtectedBolbSize = new UINT32;
 	SealData->hr = E_FAIL;
 
     //RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
     RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(SealData), TRUE /* fWaitForThread */, &Output));
-
-    // Verify that it performed the expected calculation.
-    //if ((reinterpret_cast<ULONG_PTR>(Output) ^ Input) != 0xDADAF00D)
-    //{
-    //    printf("Unexpected result from enclave\n");
-    //}
-    //else {//print Output and Input
-    //    printf("Output: %llX\n", reinterpret_cast<ULONG_PTR>(Output));
-    //    printf("Input: %llX\n", Input);
-    //    printf("Output ^ Input: %llX\n", reinterpret_cast<ULONG_PTR>(Output) ^ Input);
-    //    printf("Finished!\n");
-    //}
-
 
     if (SealData->ProtectedBolb == nullptr) {
         printf("Protected Blob is null\n");
