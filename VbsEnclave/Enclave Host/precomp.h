@@ -12,12 +12,13 @@
 #pragma once
 
 #include <windows.h>
+
 #include <stdio.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <stdlib.h>
 #include <fstream>
-
+//enclapp.cpp 쪽 헤더파일
 #define BUFFER_SIZE 4'096
 
 typedef struct SealDataInfo {

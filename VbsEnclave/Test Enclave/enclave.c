@@ -35,7 +35,7 @@ const IMAGE_ENCLAVE_CONFIG __enclave_config = {
 };
 
 ULONG InitialCookie;
-unsigned char str[BUFFER_SIZE] = "[Enclave]This is example for Enclave memory dump.";
+unsigned char str[1'024] = "[Enclave]This is example for Enclave memory dump.";
 
 BOOL
 DllMain(
@@ -77,18 +77,19 @@ SaveEnclaveDataTest(
     swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"SaveEnclaveDataTest started");
     OutputDebugStringW(String);
 
-    UINT32 BufferSize = BUFFER_SIZE;
+    UINT32 BufferSize = 0;// BUFFER_SIZE;
 	SealDataInfo* SealData = (SealDataInfo*)malloc(sizeof(SealDataInfo));
-    SealData->ProtectedBolb = (unsigned char*)malloc(sizeof(unsigned char)* BUFFER_SIZE);
+    SealData->ProtectedBolb = NULL; //(unsigned char*)malloc(sizeof(unsigned char) * BUFFER_SIZE);
     SealData->ProtectedBolbSize = (UINT32*)malloc(sizeof(UINT32));
     SealData->hr = E_FAIL;
 
+    //ProtectedBolb가 NULL && BufferSize가 0이면 S_OK 반환 및 데이터 사이즈 값 반환 가능
     HRESULT hr = EnclaveSealData(
                     (void*)str, 
                     strlen(str), 
                     ENCLAVE_IDENTITY_POLICY_SEAL_SAME_AUTHOR, 
                     ENCLAVE_RUNTIME_POLICY_ALLOW_FULL_DEBUG,
-                    (PVOID)SealData->ProtectedBolb,
+                    SealData->ProtectedBolb,
                     BufferSize,
                     SealData->ProtectedBolbSize
     );

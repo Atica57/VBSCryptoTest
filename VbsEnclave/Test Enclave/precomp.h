@@ -9,15 +9,15 @@
 //
 //*********************************************************
 
+
 #pragma once
 
 #include <winenclave.h>
 #include <wchar.h>
-//[24.07.30]
 #include <bcrypt.h>
 #include <string.h>
 #include <stdlib.h>
-
+//enclave.c 쪽 헤더파일
 #define BUFFER_SIZE 4'096
 
 typedef struct SealDataInfo {
