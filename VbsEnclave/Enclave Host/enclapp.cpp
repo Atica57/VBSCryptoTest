@@ -88,93 +88,39 @@ HRESULT RunSealAndUnsealData()
 
     // Call the function. Our test function XOR's its input with a magic number.
     ULONG_PTR Input = 0x1234;
-    void* Output;
-    //std::ofstream outFile("encalveData.dat", std::ios::binary);
-    //SealDataInfo* SealData = new SealDataInfo();
-    //SealData->ProtectedBolb = malloc(sizeof(char*));
-    //SealData->ProtectedBolbSize = new UINT32;
+    void* SealResult;
 
-    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &Output));
+    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(Input), TRUE /* fWaitForThread */, &SealResult));
     //RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine, reinterpret_cast<void*>(SealData), TRUE /* fWaitForThread */, &Output));
-    if (Output == nullptr) {
+    if (SealResult == nullptr) {
         printf("Output is null\n");
     }
-    SealDataInfo* SealData = reinterpret_cast<SealDataInfo*>(Output);
+    SealDataInfo* SealData = reinterpret_cast<SealDataInfo*>(SealResult);
     if (SealData == nullptr) {
         printf("SealData is null\n");
 		return E_FAIL;
     }
+    else if(FAILED(SealData->hr)){
+        printf("The error is occurred in EnclaveSealData function.\n");
+    }
     else {
-        //printf("ProtectedBolb Adress: %p\n", SealData->ProtectedBolb);
-        //printf("ProtectedBolb value: %s\n", *(SealData->ProtectedBolb));
-        printf("Protected Blob Size: %d\n", *(SealData->ProtectedBolbSize));
+        printf("HRESULT is S_OK. Sealing data is completed.");
     }
 
-    //////////Create Another Enclave
-    // Create the enclave
-    constexpr ENCLAVE_CREATE_INFO_VBS CreateInfo2
-    {
-        ENCLAVE_VBS_FLAG_DEBUG, // Flags --> The enclave permits debugging
-        //0, // The encalve does not permit debugging
-        { 0x10, 0x20, 0x30, 0x40, 0x41, 0x31, 0x21, 0x11 }, // OwnerID
-    };
-
-    PVOID Enclave2 = CreateEnclave(GetCurrentProcess(),
-        nullptr, // Preferred base address
-        0x10000000, // size
-        0,
-        ENCLAVE_TYPE_VBS,
-        &CreateInfo2,
-        sizeof(ENCLAVE_CREATE_INFO_VBS),
-        nullptr);
-    RETURN_LAST_ERROR_IF_NULL(Enclave2);
-
-    // Ensure we terminate and delete the enclave even if something goes wrong.
-    auto cleanup2 = wil::scope_exit([&]
-        {
-            // fWait = TRUE means that we wait for all threads in the enclave to terminate.
-            // This is necessary because you cannot delete an enclave if it still has
-            // running threads.
-            LOG_IF_WIN32_BOOL_FALSE(TerminateEnclave(Enclave, TRUE));
-
-            // Delete the enclave.
-            LOG_IF_WIN32_BOOL_FALSE(DeleteEnclave(Enclave));
-        });
-
-    // Load enclave module with SEM_FAILCRITICALERRORS enabled to suppress
-    // the error message dialog.
-    {
-        DWORD previousMode2 = GetThreadErrorMode();
-        SetThreadErrorMode(previousMode2 | SEM_FAILCRITICALERRORS, nullptr);
-        auto restoreErrorMode2 = wil::scope_exit([&]
-            {
-                SetThreadErrorMode(previousMode2, nullptr);
-            });
-        RETURN_IF_WIN32_BOOL_FALSE(LoadEnclaveImageW(Enclave2, L"vbsenclave.dll"));
-    }
-
-    // Initialize the enclave with one thread.
-    // Once initialized, no more DLLs can be loaded into the enclave.
-    ENCLAVE_INIT_INFO_VBS InitInfo2{};
-
-    InitInfo2.Length = sizeof(ENCLAVE_INIT_INFO_VBS);
-    InitInfo2.ThreadCount = 1;
-
-    RETURN_IF_WIN32_BOOL_FALSE(InitializeEnclave(GetCurrentProcess(),
-        Enclave2,
-        &InitInfo2,
-        InitInfo2.Length,
-        nullptr));
+    //////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////Check UnsealData/////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
 
     // Locate the function in the enclave.
-    PENCLAVE_ROUTINE Routine2 = reinterpret_cast<PENCLAVE_ROUTINE>(GetProcAddress(reinterpret_cast<HMODULE>(Enclave2), "LoadEnclaveDataTest"));
+    PENCLAVE_ROUTINE Routine2 = reinterpret_cast<PENCLAVE_ROUTINE>(
+        GetProcAddress(reinterpret_cast<HMODULE>(Enclave), "LoadEnclaveDataTest"));
     RETURN_LAST_ERROR_IF_NULL(Routine2);
 
     // Call the function. Our test function XOR's its input with a magic number.
     //ULONG_PTR Input = 0x1234;
-    void* Output2;
+    void* UnsealResult;
 
-    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine2, reinterpret_cast<void*>(SealData), TRUE /* fWaitForThread */, &Output2));
+    RETURN_IF_WIN32_BOOL_FALSE(CallEnclave(Routine2, reinterpret_cast<void*>(SealData), TRUE /* fWaitForThread */, &UnsealResult));
 
     /*if (reinterpret_cast<HRESULT>(Output2) == E_FAIL) {
         printf("결과: Not Equal. Do try again\n");
