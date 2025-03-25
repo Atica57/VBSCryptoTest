@@ -36,6 +36,8 @@ const IMAGE_ENCLAVE_CONFIG __enclave_config = {
 
 ULONG InitialCookie;
 unsigned char str[1'024] = "[Enclave]This is example for Enclave memory dump.";
+BYTE* EnclaveProtectedBlob;
+UINT32 EnclaveProtectedBlobSize;
 
 BOOL
 DllMain(
@@ -77,12 +79,13 @@ SaveEnclaveDataTest(
     swprintf_s(String, ARRAYSIZE(String), L"%s\n", L"SaveEnclaveDataTest started");
     OutputDebugStringW(String);
 
-    UINT32 BufferSize = 0;// BUFFER_SIZE;
+    UINT32 BufferSize = BUFFER_SIZE;
 	SealDataInfo* SealData = (SealDataInfo*)malloc(sizeof(SealDataInfo));
-    SealData->PB = NULL;
-    //SealData->ProtectedBolb = (unsigned char*)malloc(sizeof(unsigned char) * BUFFER_SIZE);
-    SealData->ProtectedBolbSize = (UINT32*)malloc(sizeof(UINT32));
+    SealData->ProtectedBolb = NULL; //(unsigned char*)malloc(sizeof(unsigned char) * BUFFER_SIZE);
+    //SealData->ProtectedBolbSize = (UINT32*)malloc(sizeof(UINT32));
     SealData->hr = E_FAIL;
+
+    EnclaveProtectedBlob = (BYTE*)malloc(sizeof(BYTE) * BUFFER_SIZE);
 
     //ProtectedBolb가 NULL && BufferSize가 0이면 S_OK 반환 및 데이터 사이즈 값 반환 가능
     HRESULT hr = EnclaveSealData(
@@ -90,11 +93,13 @@ SaveEnclaveDataTest(
                     strlen(str), 
                     ENCLAVE_IDENTITY_POLICY_SEAL_SAME_AUTHOR, 
                     ENCLAVE_RUNTIME_POLICY_ALLOW_FULL_DEBUG,
-                    SealData->PB,
+                    EnclaveProtectedBlob,
                     BufferSize,
-                    SealData->ProtectedBolbSize
+                    &EnclaveProtectedBlobSize
     );
     SealData->hr = hr;
+    SealData->ProtectedBolb = EnclaveProtectedBlob;
+    SealData->ProtectedBolbSize = EnclaveProtectedBlobSize;
     return (void*)SealData;
 }
 
@@ -120,7 +125,7 @@ LoadEnclaveDataTest(
 
 	HRESULT hr = EnclaveUnsealData(
 		            ((SealDataInfo*)SealData)->ProtectedBolb,
-		            *(((SealDataInfo*)SealData)->ProtectedBolbSize),
+		            ((SealDataInfo*)SealData)->ProtectedBolbSize,
                     UnsealData->DecryptedData,
                     sizeof(str),
 		            UnsealData->DecryptedDataSize,

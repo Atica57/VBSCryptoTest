@@ -22,7 +22,7 @@
 
 typedef struct SealDataInfo {
 	HRESULT hr;
-	BYTE ProtectedBolb[BUFFER_SIZE];
+	BYTE* ProtectedBolb;
     UINT32 ProtectedBolbSize;
 }SealDataInfo;
 
@@ -30,5 +30,5 @@ typedef struct UnsealDataInfo {
 	HRESULT hr;
 	BYTE* DecryptedData;
 	//PVOID DecryptedData;
-	UINT32* DecryptedDataSize;
+	UINT32 DecryptedDataSize;
 }UnsealDataInfo;
